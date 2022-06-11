@@ -1,0 +1,37 @@
+﻿.col-md {
+    padding: 0;
+    margin: 5px;
+}
+
+
+
+.carousel-Img {
+    width: auto;
+    height: 300px;
+    max-height: 300px;
+}
+
+.p {
+    margin-bottom: 0;
+}
+
+
+.navbar {
+    padding: 0 30px 0 20px !important;
+}
+
+footer {
+    color: white;
+}
+
+a {
+    text-decoration: none;
+}
+
+    a.badge:hover {
+        color: white;
+    }
+
+    a.btn:hover {
+        text-decoration: none;
+    }

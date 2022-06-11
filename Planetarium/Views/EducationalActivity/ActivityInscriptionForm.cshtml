@@ -1,0 +1,158 @@
+﻿@model Planetarium.Models.VisitorModel
+@{
+    ViewBag.Title = "Inscripción";
+    List<SelectListItem> Countries = ViewBag.Countries;
+    List<SelectListItem> EducationalLevels = ViewBag.EducationalLevels;
+    List<SelectListItem> GenderOptions = ViewBag.GenderOptions;
+    string urlToUsernames = Url.Content("~/Account/GetAllUserNames");
+}
+
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/Content/styles.css" type="text/css"/>
+</head>
+<body>
+    <div class="container">
+        @if (Convert.ToBoolean(TempData["Error"]) == true) {
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <span type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></span>
+                <strong>¡Oh no!</strong> @TempData["WarningMessage"]
+            </div>
+        }
+
+
+
+
+        @using (Html.BeginForm("SubmitActivityInscriptionForm", "EducationalActivity", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+            @Html.AntiForgeryToken()
+            <h2 style="margin: 20px 0 30px 0;"><strong>@ViewBag.ActivityTitle</strong></h2>
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="text-success text-center">Formulario de Inscripción</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            @Html.LabelFor(model => model.Username)
+                            @Html.TextBoxFor(model => model.Username, new { @class = "form-control", @placeholder = "JohnDoe", @onkeyup= "checkUsername(this.value)" })
+                            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                            <p id="badUsername" class="text-danger" style="display: none;">Nombre de usuario inválido o se encuentra ocupado</p>
+                            <p id="goodUsername" class="text-success" style="display: none;">Usuario válido</p>
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(model => model.Password)
+                            @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @placeholder = "************", @type="password" })
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            @Html.LabelFor(model => model.FullName)
+                            @Html.TextBoxFor(model => model.FullName, new { @class = "form-control", @placeholder = "John Doe" })
+                            @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(model => model.Gender)
+                            @Html.DropDownListFor(model => model.Gender, GenderOptions, "- Sin selección - ", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 15px;">
+                        <div class="col">
+                            @Html.LabelFor(model => model.Dni)
+                            @Html.TextBoxFor(model => model.Dni, new { @class = "form-control", @placeholder = "#########"})
+                            @Html.ValidationMessageFor(model => model.Dni, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(model => model.EducationalLevel)
+                            @Html.DropDownListFor(model => model.EducationalLevel, EducationalLevels, "- Sin selección - ", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(model => model.EducationalLevel, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 15px;">
+                        <div class="col">
+                            @Html.LabelFor(model => model.Mail)
+                            @Html.TextBoxFor(model => model.Mail, new { @class = "form-control", @placeholder = "john.doe@gmail.com", @type = "email" })
+                        </div>
+                        <div class="col">
+                            @Html.LabelFor(model => model.NativeCountry)
+                            @Html.DropDownListFor(model => model.NativeCountry, Countries, "- Sin selección - ", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(model => model.NativeCountry, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 15px">
+                        <div class="col-6">
+                            @Html.LabelFor(model => model.DateOfBirth)
+                            <br />
+                            @Html.EditorFor(model => model.DateOfBirth, new { @type = "date", @class = "w-100" })
+                            @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    @Html.ActionLink("Cancelar", "../EducationalActivity/ActivityInscription", new { activityTitle = @ViewBag.ActivityTitle, activityDate = @ViewBag.ActivityDate }, new { @class = "btn btn-secondary inputButton" })
+                    
+                    <input type="submit" class="btn btn-success inputButton" value="Inscribirme" />
+                </div>
+                <input type="text" id="title" name="title" style="display:none" value="@ViewBag.ActivityTitle" />
+                <input type="text" id="date" name="date" style="display:none" value="@ViewBag.ActivityDate" />
+                <input type="text" id="route" name="mainRoute" style="display:none" value="@ViewBag.Route" />
+            </div>
+        }
+    </div>
+    <script type="text/javascript" src="~/Scripts/inscriptionForm.js"></script>
+    <script>
+        let usernames = [];
+        async function getAllUsernames(url){
+            let usernames = [];
+            let response = await fetch(url);
+            let data = await response.json();
+            data.forEach(element => {
+                usernames.push(element);
+            });
+            return usernames;
+        }
+
+        async function checkUsername(value) {
+            let usernames = await getAllUsernames("@urlToUsernames");
+            let badUsername = document.getElementById("badUsername");
+            let goodUsername = document.getElementById("goodUsername");
+            badUsername.removeAttribute("style");
+            goodUsername.removeAttribute("style");
+
+            if (usernames.includes(value) || value == '') {
+                invalidField();
+            } else {
+                validField();
+            }
+        }
+
+
+        function invalidField() {
+            let badUsername = document.getElementById("badUsername");
+            let goodUsername = document.getElementById("goodUsername");
+
+            badUsername.style.display = "block";
+            goodUsername.style.display = "none";
+
+        }
+
+        function validField() {
+            let badUsername = document.getElementById("badUsername");
+            let goodUsername = document.getElementById("goodUsername");
+
+            badUsername.style.display = "none";
+            goodUsername.style.display = "block";
+        }
+
+    </script>
+</body>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+</html>

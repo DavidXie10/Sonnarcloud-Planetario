@@ -1,0 +1,110 @@
+﻿@using Planetarium.Controllers
+@{
+    AuthorizationController authController = new AuthorizationController();
+    int rolCookie = 0;
+    try {
+        if (Request.Cookies.Get("authCookie") != null) {
+            rolCookie = Convert.ToInt32(Request.Cookies["authCookie"].Value);
+        }
+    } catch {
+
+    }
+}
+
+<div class="container">
+    <hr />
+    <h5 class="text-start">
+
+        @if (rolCookie >= 5) {
+            <i class="fas fa-tasks"></i>
+            @Html.ActionLink("Aceptar propuestas de actividades educativas", "/ActivitiesApprobation", new { @class = "btn btn-info" })
+        }
+
+        @if (rolCookie == 3 || rolCookie == 4 || rolCookie == 6) {
+            <i class="fas fa-user-edit" style="margin-left:10px;"></i>
+            @Html.ActionLink("Agregar actividad educativa", "/ProposeEducationalActivity", new { @class = "btn btn-info" })
+        }
+
+        @if (rolCookie == 3 || rolCookie == 4 || rolCookie == 6) {
+            <i class="fas fa-user-edit" style="margin-left:10px;"></i>
+            @Html.ActionLink("Agregar material educativo", "../EducationalMaterial/SubmitEducationalMaterial", new { @class = "btn btn-info" })
+        }
+    </h5>
+
+    <hr />
+
+    <h1 style="margin:10px 0 20px 0;">Actividades Educativas</h1>
+    <div class="form-group has-feedback">
+        <label class="control-label">Buscador</label>
+        <input type="text" id="search" class="form-control" placeholder="Buscar por palabras claves, categorías o tópicos" autocomplete="off" />
+        <i class="glyphicon glyphicon-user form-control-feedback"></i>
+    </div>
+    <div class="row d-flex">
+        @foreach (var activity in ViewBag.activities) {
+            if (activity.State == "1" && (activity.ActivityType == "Charla" || activity.ActivityType == "Taller")) {
+                <div id="@activity.Title " class="col-4 d-flex justify-content-evenly">
+                    <div id="@activity.Title" class="card rounded-3 bg-light" style="margin: 15px 0 15px 0;">
+                        <div class="card-body d-flex flex-column">
+                            <h2 class="text-start">@activity.Title  </h2>
+                            <h9>Fecha: @activity.Date.ToString("dd'/'MM'/'yyyy")</h9>
+                            <h4>Impartido por: @activity.Publisher </h4>
+                            <p class="card-text" style="margin-top: 15px;">
+                                @activity.Description
+                            </p>
+                            @if (@activity.TypeOfAssistance == "Virtual" || @activity.TypeOfAssistance == "Bimodal") {
+                                <h5 style="color: #18BC9C"><i class="fas fa-video"></i> @activity.TypeOfAssistance </h5>
+                            }
+                            <h5>
+                                Público Meta:
+                                @foreach (var targetAudienceInstance in activity.TargetAudience) {
+                                    <a class="badge  rounded-pill bg-secondary"> @targetAudienceInstance</a>
+                                }
+                            </h5>
+                            <br />
+                            @Html.ActionLink("Ver más", "EducationalActivity", new { tempActivity = Json.Encode(@activity) }, new { @class = "align-self-end align-self-right btn btn-info", @style = "margin-top: auto; width:50%" })
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="card" style="margin: 50px 0 50px 0;">
+        <div class="card-header">
+            <h3><strong>Telescopiadas, Películas y Otros</strong></h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                @foreach (var activity in ViewBag.activities) {
+                    if (activity.ActivityType != "Charla" && activity.ActivityType != "Taller") {
+                        <div id="@activity.Title" class="col-6 ">
+                            <div id="@activity.Title" class="card rounded-3 bg-light" style="margin: 15px 0 15px 0;">
+                                <div class="card-header text-center">
+                                    <h4><strong>@activity.Title</strong></h4>
+                                </div>
+                                <div class="card-body">
+                                    Fecha: @activity.Date<br />
+                                    @{
+                                        string price = (@activity.Price == 0) ? "Gratis" : "₡" + @activity.Price;
+                                    }
+                                    Precio:  @price <br />
+                                    Tipo: @activity.ActivityType <br />
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    function search() {
+        let text = document.getElementById("search").value;
+        var activities = @Html.Raw(Json.Encode(ViewBag.activities));
+        matchAllTitles(activities, text);
+    }
+</script>
+<script src="~/Scripts/listActivities.js"></script>

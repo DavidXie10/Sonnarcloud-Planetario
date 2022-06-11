@@ -1,0 +1,272 @@
+﻿@using Planetarium.Controllers
+@{ 
+    AuthorizationController authController = new AuthorizationController();
+    string userIdentityCookie = null;
+    int rolCookie = 0;
+    try {
+
+        if (Request.Cookies.Get("userIdentity") != null) {
+            userIdentityCookie = Request.Cookies["userIdentity"].Value;
+        }
+        if (Request.Cookies.Get("authCookie") != null) {
+            rolCookie = Convert.ToInt32(Request.Cookies["authCookie"].Value);
+        }
+
+    } catch {
+        userIdentityCookie = null;
+    }
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+    <script src="https://kit.fontawesome.com/9ca089ca02.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/Home/Index">
+            <img src="~/images/logotipo.jpeg" width="100" height="70" alt="">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+
+                    <a class="nav-link" href="/Home/Index"><i class="fas fa-home"></i> Inicio</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/News/ListNews"><i class="far fa-newspaper"></i> Noticias y Anuncios</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/EducationalActivity/ListActivities"><i class="fas fa-meteor"></i> Actividades</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-users"></i> Nosotros
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/Employees/ListEmployees"><i class="fas fa-user-astronaut"></i> Funcionarios</a>
+                        @if (rolCookie >= 5)
+                        {
+                            <a class="dropdown-item" href="/Employees/CreateEmployee"><i class="fas fa-user-plus"></i> Agregar funcionario</a>
+                        }
+                        <a class="dropdown-item" href="/Home/FindUs"><i class="fas fa-map-marked-alt"></i> Encuéntrenos</a>
+                        <a class="dropdown-item" href="/Home/WhoWeAre"><i class="fas fa-users"></i> ¿Quienes Somos?</a>
+                    </div>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="/FrequentlyQuestion/FrequentlyAskQuestions" tabindex="-1" aria-disabled="true"><i class="fas fa-question-circle"></i> FAQ</a>
+                </li>
+
+                @if (rolCookie >= 5)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-poll"></i> Estadísticas
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/EducationalActivity/ShowStatistics"><i class="fas fa-meteor"></i> En actividades educativas</a>
+                            <a class="dropdown-item" href="/EducationalActivity/ShowStatisticsInvolvement"><i class="fas fa-poll-h"></i> Por temas</a>
+                            <a class="dropdown-item" href="/Employees/ShowEmployeesIdiomsStatistics"><i class="far fa-comments"></i> De idiomas de colaboradores</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/DataAnalytics/StoreReports" class="nav-link"> <i class="fas fa-search-dollar"></i> Reportes</a>
+                    </li>
+                }
+                @if (rolCookie != 0)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Souvenir/Catalog" tabindex="-1" aria-disabled="true" id="souvenirNavbar"> <i class="fas fa-gift"></i> Souvenirs</a>
+                    </li>
+                }
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/Games/ListOfGames" tabindex="-1" aria-disabled="true"><i class="fas fa-gamepad"></i> Juegos</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRateUs" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-poll-h"></i> Evalúenos
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" onclick="displayModal()" id="websiteExperience"><i class="fas fa-poll-h"></i> Cuéntanos tu experiencia en la página</a>
+                        <a class="dropdown-item" href="/RateUs/UXEvaluation"><i class="fas fa-tasks"></i> Realice nuestra encuesta estandarizada del sitio</a>
+                        @if (rolCookie >= 5) { 
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/RateUs/RateResults" id="rateResults" > Ver los resultados de las encuestas</a>
+                        }
+                    </div>
+
+                </li>
+            </ul>
+            <ul class="navbar-nav text-end" style="position: absolute; right: 0;">
+                @if (userIdentityCookie == null) {
+                    <li class="nav-item">
+                        <a href="/Account/Login" class="nav-link" id="login">Ingresar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/EducationalActivity/ActivityInscriptionForm" class="nav-link">Registrarme</a>
+                    </li>
+                } else {
+                <li class="nav-item">
+                    <a href="/Account/Login" class="nav-link">@userIdentityCookie</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Home/Index" class="nav-link" onclick="deleteCookie()">Salir</a>
+                </li>
+                }
+
+            </ul>
+
+        </div>
+    </nav>
+    <input type="hidden" class="btn btn-info btn-lg" data-toggle="modal" data-target="#RateUs" id="rateUsModal" />
+    <!-- Modal for Rate Us -->
+    <div class="modal fade" id="RateUs" role="dialog">
+        <div class="modal-dialog modal modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#2c3e50;display: block;">
+                    <h4 class="modal-title" style="text-align:center;color:white">Califica nuestro sitio web</h4>
+                </div>
+                <div class="modal-body">
+                    <h2 style="font-size:larger; text-align:center; ">¿Cuántas estrellas le da al sitio?</h2>
+                    @{ Html.RenderPartial("~/Views/RateUs/indexRate.cshtml"); }
+                    <div class="align-content-center" style="text-align:center">
+                        @Html.ActionLink("[Califícanos también en el cuestionario estandarizado aquí]", "UXEvaluation", "RateUS", null, new { @class = "", @style = "color:#0ACF83; text-align:center" })
+                    </div>
+                </div>
+                <div class="modal-footer align-content-center" style="text-align:center">
+                    <button type="button" class="btn btn-light" style="font-size:small; color:gray" data-dismiss="modal">Ahora no</button>
+
+                    @using (Html.BeginForm("SubmitRate", "RateUs", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+                    @Html.AntiForgeryToken()
+                    <input style="display:none" value="5" id="rateChoice" />
+                    <input type="submit" class="btn btn-primary" style="font-size:small" value="Enviar" />
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="rounded">
+        @RenderBody()
+
+    </div>
+
+    <footer>
+        <div class="card-footer bg-primary" style="padding:20px;">
+            <div class="d-flex align-items-center" href="/">
+                <a href="https://www.ucr.ac.cr/">
+                    <img src="~/images/firma-ucr-ico.png" width="190" height="100" class="d-inline-block" alt="" style="margin-right: 10px;">
+                </a>
+                <p class="d-inline-block">
+                    Planetario de San Jose, <br />
+                    Universidad de Costa Rica
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-2">
+                    <div class="card-body">
+                        <p class="card-title">
+                            <i class="fas fa-phone"></i>
+                            <strong> Teléfono</strong> <br />
+                        </p>
+                        <p class="card-text">
+                            8793-0495 <br />
+                            2233-9485 <br />
+                            8493-3022 <br />
+                        </p>
+                        <p class="card-title" style="margin-top: 30px;">
+                            <i class="fas fa-envelope"></i>
+                            <strong> Correo</strong> <br />
+                        </p>
+                        <p class="card-text">
+                            <a href="mailto:actividades.planetarioucr@gmail.com">actividades.planetarioucr@gmail.com</a>
+                            <br />
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-5">
+                    <div class="card-body">
+                        <p class="card-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong> Dirección</strong> <br />
+                        </p>
+                        <p class="card-text">
+                            Ciudad de la Investigación de la UCR, San Pedro de Montes de Oca. Del supermercado Muñoz y Nanne 400 metros Norte (entrada principal a la Ciudad de la Investigación).
+                            También de Radio Universidad 500 metros Este.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-2">
+                    <div class="card-body">
+                        <p class="card-title">
+                            <i class="fas fa-calendar"></i>
+                            <strong> Horarios</strong> <br />
+                        </p>
+                        <p class="card-text">
+                            L - V: <br />
+                            9:00am - 8:00pm <br />
+                            S y D:  <br />
+                            9:00am - 4:00pm
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="card-body">
+                        <a class="nav-link" href="/Employees/ListEmployees">
+                            <strong style="color:white"> Compártenos en tus redes</strong> <br />
+                            <br />
+                            <iframe src="https://www.facebook.com/plugins/share_button.php?href=https%3A%2F%2Fwww.facebook.com%2Fplanetariodesanjose&layout=button&size=large&width=103&height=28&appId" width="103" height="28" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    @*@Scripts.Render("~/bundles/jquery")*@
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    @RenderSection("scripts", required: false)
+
+    <script>
+
+        function deleteCookie() {
+            document.cookie = "userIdentity=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+            document.cookie = "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+        }
+
+        function displayModal() {
+            document.getElementById("rateUsModal").click();
+        }
+
+    </script>
+
+
+</body>
+</html>
