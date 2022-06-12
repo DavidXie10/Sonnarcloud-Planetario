@@ -3683,37 +3683,37 @@
    * ------------------------------------------------------------------------
    */
 
-  let NAME$8 = 'scrollspy';
-  let VERSION$8 = '4.6.0';
-  let DATA_KEY$8 = 'bs.scrollspy';
-  let EVENT_KEY$8 = "." + DATA_KEY$8;
-  let DATA_API_KEY$6 = '.data-api';
-  let JQUERY_NO_CONFLICT$8 = $__default['default'].fn[NAME$8];
-  let Default$6 = {
+  var NAME$8 = 'scrollspy';
+  var VERSION$8 = '4.6.0';
+  var DATA_KEY$8 = 'bs.scrollspy';
+  var EVENT_KEY$8 = "." + DATA_KEY$8;
+  var DATA_API_KEY$6 = '.data-api';
+  var JQUERY_NO_CONFLICT$8 = $__default['default'].fn[NAME$8];
+  var Default$6 = {
     offset: 10,
     method: 'auto',
     target: ''
   };
-  let DefaultType$6 = {
+  var DefaultType$6 = {
     offset: 'number',
     method: 'string',
     target: '(string|element)'
   };
-  let EVENT_ACTIVATE = "activate" + EVENT_KEY$8;
-  let EVENT_SCROLL = "scroll" + EVENT_KEY$8;
-  let EVENT_LOAD_DATA_API$2 = "load" + EVENT_KEY$8 + DATA_API_KEY$6;
-  let CLASS_NAME_DROPDOWN_ITEM = 'dropdown-item';
-  let CLASS_NAME_ACTIVE$2 = 'active';
-  let SELECTOR_DATA_SPY = '[data-spy="scroll"]';
-  let SELECTOR_NAV_LIST_GROUP = '.nav, .list-group';
-  let SELECTOR_NAV_LINKS = '.nav-link';
-  let SELECTOR_NAV_ITEMS = '.nav-item';
-  let SELECTOR_LIST_ITEMS = '.list-group-item';
-  let SELECTOR_DROPDOWN = '.dropdown';
-  let SELECTOR_DROPDOWN_ITEMS = '.dropdown-item';
-  let SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle';
-  let METHOD_OFFSET = 'offset';
-  let METHOD_POSITION = 'position';
+  var EVENT_ACTIVATE = "activate" + EVENT_KEY$8;
+  var EVENT_SCROLL = "scroll" + EVENT_KEY$8;
+  var EVENT_LOAD_DATA_API$2 = "load" + EVENT_KEY$8 + DATA_API_KEY$6;
+  var CLASS_NAME_DROPDOWN_ITEM = 'dropdown-item';
+  var CLASS_NAME_ACTIVE$2 = 'active';
+  var SELECTOR_DATA_SPY = '[data-spy="scroll"]';
+  var SELECTOR_NAV_LIST_GROUP = '.nav, .list-group';
+  var SELECTOR_NAV_LINKS = '.nav-link';
+  var SELECTOR_NAV_ITEMS = '.nav-item';
+  var SELECTOR_LIST_ITEMS = '.list-group-item';
+  var SELECTOR_DROPDOWN = '.dropdown';
+  var SELECTOR_DROPDOWN_ITEMS = '.dropdown-item';
+  var SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle';
+  var METHOD_OFFSET = 'offset';
+  var METHOD_POSITION = 'position';
   /**
    * ------------------------------------------------------------------------
    * Class Definition

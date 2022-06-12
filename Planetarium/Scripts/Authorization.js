@@ -19,4 +19,3 @@ class AuthController {
 function registerOnController() {
     authController.registerUser();
 }
-
